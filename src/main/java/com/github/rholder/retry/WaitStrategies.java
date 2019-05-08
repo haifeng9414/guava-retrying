@@ -121,7 +121,7 @@ public final class WaitStrategies {
      *
      * @return a wait strategy that increments with each failed attempt using exponential backoff
      */
-    public static WaitStrategy exponentialWait() {
+    public static WaitStrategy llWait() {
         return new ExponentialWaitStrategy(1, Long.MAX_VALUE);
     }
 

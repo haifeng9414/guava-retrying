@@ -31,7 +31,9 @@ import java.util.List;
  * @author JB
  * @author Jason Dunkelberger (dirkraft)
  */
+// RetryerBuilder用于构建Retryer对象
 public class RetryerBuilder<V> {
+    // 包含了Retryer类的所有成员变量
     private AttemptTimeLimiter<V> attemptTimeLimiter;
     private StopStrategy stopStrategy;
     private WaitStrategy waitStrategy;
@@ -48,10 +50,10 @@ public class RetryerBuilder<V> {
      * @param <V> result of a {@link Retryer}'s call, the type of the call return value
      * @return the new builder
      */
+    // 静态方法返回RetryerBuilder实例，并设置了范型
     public static <V> RetryerBuilder<V> newBuilder() {
         return new RetryerBuilder<V>();
     }
-
     /**
      * Adds a listener that will be notified of each attempt that is made
      *
@@ -73,7 +75,9 @@ public class RetryerBuilder<V> {
      * @throws IllegalStateException if a wait strategy has already been set.
      */
     public RetryerBuilder<V> withWaitStrategy(@Nonnull WaitStrategy waitStrategy) throws IllegalStateException {
+        // 设置之前检查是否为空
         Preconditions.checkNotNull(waitStrategy, "waitStrategy may not be null");
+        // 检查是否已经设置过该属性
         Preconditions.checkState(this.waitStrategy == null, "a wait strategy has already been set %s", this.waitStrategy);
         this.waitStrategy = waitStrategy;
         return this;
@@ -188,6 +192,7 @@ public class RetryerBuilder<V> {
      * @return the built retryer.
      */
     public Retryer<V> build() {
+        // 创建之前设置默认值
         AttemptTimeLimiter<V> theAttemptTimeLimiter = attemptTimeLimiter == null ? AttemptTimeLimiters.<V>noTimeLimit() : attemptTimeLimiter;
         StopStrategy theStopStrategy = stopStrategy == null ? StopStrategies.neverStop() : stopStrategy;
         WaitStrategy theWaitStrategy = waitStrategy == null ? WaitStrategies.noWait() : waitStrategy;
@@ -196,6 +201,8 @@ public class RetryerBuilder<V> {
         return new Retryer<V>(theAttemptTimeLimiter, theStopStrategy, theWaitStrategy, theBlockStrategy, rejectionPredicate, listeners);
     }
 
+    // 下面是一些Predicate，用于判断Attempt是否需要重试
+    // 判断Attempt产生的异常是否满足重试条件
     private static final class ExceptionClassPredicate<V> implements Predicate<Attempt<V>> {
 
         private Class<? extends Throwable> exceptionClass;
@@ -213,6 +220,7 @@ public class RetryerBuilder<V> {
         }
     }
 
+    // 判断Attempt产生的结果是否满足重试条件
     private static final class ResultPredicate<V> implements Predicate<Attempt<V>> {
 
         private Predicate<V> delegate;
@@ -231,6 +239,7 @@ public class RetryerBuilder<V> {
         }
     }
 
+    // 判断Attempt产生的异常是否满足重试条件
     private static final class ExceptionPredicate<V> implements Predicate<Attempt<V>> {
 
         private Predicate<Throwable> delegate;
